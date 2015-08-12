@@ -1,86 +1,82 @@
 package example
-import scala.scalajs.js.annotation.JSExport
-import org.scalajs.dom
-import scala.scalajs.js
-import org.scalajs.dom.html
-import scala.util.Random
-//import scalatags.Text.all._
-import scalatags.JsDom.all._
-import scalatags.stylesheet._
 
+import org.scalajs.dom
+import org.scalajs.dom.html
+import org.scalajs.dom.raw.Element
+
+import scala.scalajs.js.JSApp
+import scala.scalajs.js.annotation.JSExport
+import scalatags.JsDom.all._
+import scalatags.stylesheet.{Sheet, StyleSheet}
 
 @JSExport
-object ScalaJSExample {
-	trait exampleStyle extends StyleSheet {
-   def highlightedImproved = cls(
-     color := "green",
-     fontWeight := "bold"
-   )
-   
-   def fade = cls.hover(
-     opacity := 0.2
-   )
-   
-   def glitter = cls.hover(
-     backgroundColor := "pink"
-   )
-  }
-  
+object ScalaJSExample extends JSApp { // JSApp is optional to satisfy sbt run
+
   val exampleStyle = Sheet[exampleStyle]
+  trait exampleStyle extends StyleSheet {
+    def highlighted = cls(color := "green", fontWeight := "bold")
+
+    def fade = cls.hover(opacity := 0.3)
+
+    def glitter = cls.hover(backgroundColor := "pink")
+  }
+
   val myStyle = dom.document.createElement("style")
   myStyle.textContent = exampleStyle.styleSheetText
-  println(exampleStyle.styleSheetText)
   dom.document.head.appendChild(myStyle)
-  
-  import exampleStyle._
-  
+
   @JSExport
-  def main(container: html.Div): Unit = {
-    val stations = List(
-        "Vila Madalena",
-        "Paraíso",
-        "Ana Rosa",
-        "Consolação",
-        "Trianon",
-        "Brás",
-        "Luz",
-        "Brigadeiro",
-        "Tatuapé",
-        "Belém"
-    )
+  def showDetail(document: html.BlockElement) {
+    import exampleStyle._
+
     val myInput = input().render
     val myOutput = div().render
-    val stationsUl = ul(stations.map(li(_))).render
-    
-//    myInput.in
+
+    def stations = List(
+      "Vila Madalena",
+      "Paraíso",
+      "Ana Rosa",
+      "Consolação",
+      "Trianon",
+      "Brás",
+      "Luz",
+      "Brigadeiro",
+      "Tatuapé",
+      "Belém"
+    )
+
+    val stationsUl = dom.document.createElement("stations")
+    stationsUl.innerHTML = highLighter("", stations).innerHTML
+
+    def highLighter (searchText: String, list : List[String]): Element = {
+      val buffer = dom.document.createElement("buffer")
+
+      list.filter(_.toLowerCase.contains(searchText)).foreach { station =>
+        val indexOf = station.toLowerCase indexOf searchText
+
+        val (startOfText, foundText, endOfText) = (station.take(indexOf)
+          , station.slice(indexOf, indexOf + searchText.length)
+          , station.drop(indexOf + searchText.length))
+
+        buffer.appendChild(li(fade, startOfText, span(highlighted, foundText), endOfText).render)
+      }
+      buffer
+    }
+
     myInput.onkeyup = (e: dom.Event) => {
       myOutput.innerHTML = myInput.value
-      stationsUl.innerHTML = ""
-      val searchString = myInput.value.toLowerCase()
-//      stations.filter(_.toLowerCase.startsWith(searchString)).foreach { station => 
-      stations.filter(_.toLowerCase.contains(searchString)).foreach { station =>
-
-        
-        //stationsUl.appendChild(li(station).render)
-        val (highlightedText, tail) = station.splitAt(searchString.size)
-        stationsUl.appendChild(li(fade,
-          span(highlightedImproved, highlightedText), tail
-        ).render)
-      }
+      stationsUl.innerHTML = highLighter( myInput.value.toLowerCase, stations).innerHTML
     }
-    
-	  //js.Dynamic.global.window.alert("Foi mesmo!")
-    //js.Dynamic.global.asdasdasd.asasdasd()
-    val a: html.Heading = h1(glitter, "Olá, TDC! \\o/\\o/\\o/").render
-    container.innerHTML = a.outerHTML
-//    container.ap
-    container.appendChild(myInput)
-    container.appendChild(myOutput)
-    container.appendChild(stationsUl)
-    
-    
-    //dom.c
-    //container.innerHTML
-    //dom.
+
+    document.innerHTML = h1(exampleStyle.glitter, s"Olá, TDC! ${"\\o/" * 3}").render.outerHTML
+    document.appendChild(myInput)
+    document.appendChild(myOutput)
+    document.appendChild(stationsUl)
+  }
+
+  def main() { // Optional to satisfy sbt run
+    val className = this.getClass.getName.init
+    val l = className.length()
+    println(("-" * 50).patch((50 - l) / 2, className, l))
   }
 }

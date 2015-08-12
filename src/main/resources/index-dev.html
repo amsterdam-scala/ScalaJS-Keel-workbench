@@ -1,20 +1,20 @@
 <!DOCTYPE html>
-<html>
+<!--[if lt IE 7 ]><html lang="en" class="ie6 ielt8"><![endif]-->
+<!--[if IE 7 ]>   <html lang="en" class="ie7 ielt8"><![endif]-->
+<!--[if IE 8 ]>   <html lang="en" class="ie8"><![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"><!--<![endif]-->
 <head>
-  <title>Example Scala.js application</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/base-min.css">
+    <meta charset="UTF-8">
+    <title>Scala.JS Barebone</title>
+    <script type="text/javascript" src="../scala-js-barebone-fastopt.js"></script>
+    <script type="text/javascript" src="/workbench.js"></script>
+    <script type="text/javascript" src="../scala-js-barebone-jsdeps.js"></script>
 </head>
-<body style="margin: 0px">
 
+<body style="margin:32px;padding:0">
 <div>
-    <div style="display: block" id="container" width="255" height="255"><span>
+    <div style="display: block" id="content"/>
 </div>
-
-<script type="text/javascript" src="../example-fastopt.js"></script>
-<script type="text/javascript" src="/workbench.js"></script>
-<script>
-    example.ScalaJSExample().main(document.getElementById('container'));
-</script>
+<script> example.ScalaJSExample().showDetail(document.getElementById('content')); </script>
 </body>
 </html>
